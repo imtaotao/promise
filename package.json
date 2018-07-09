@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
-    "test": "promises-aplus-tests test.js"
+    "test": "promises-aplus-tests test.js",
+    "test-extensions": "mocha extension_test.js --timeout 200 --slow 999999"
   },
   "author": "taotao",
   "license": "ISC",
   "devDependencies": {
+    "better-assert": "^1.0.2",
+    "mocha": "^5.2.0",
     "promises-aplus-tests": "*",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"

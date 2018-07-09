@@ -46,7 +46,7 @@ function setImmediateOrNexttick (callback) {
   }
 }
 
-if (platform === 'node') {
+if (platform.includes('node')) {
   requestFlush = setImmediateOrNexttick(_requestFlush)
 } else {
   const scope = typeof global !== 'undefined' ? global : self
@@ -83,7 +83,7 @@ function _requestFlush () {
   flushing = false
 }
 
-module.exports = function rawAsap(task) {
+module.exports = function ascb(task) {
   if (!queue.length) {
     requestFlush()
     flushing = true

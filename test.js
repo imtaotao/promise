@@ -12,3 +12,6 @@ exports.deferred = function ()  {
     reject,
   }
 }
+
+exports.resolved = Promise.resolve
+exports.rejected = Promise.reject
