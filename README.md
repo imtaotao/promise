@@ -5,6 +5,8 @@
 
 ### 测试
 依赖安装完毕后 `npm run test` 或者 `yarn test`
+<br>
+还可以通 `npm run start` 或者 `yarn start` 启动一个测试服务器，在浏览器端进行测试。
 
 ### 测试截图
 ![test](./test.png)
