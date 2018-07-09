@@ -1,5 +1,6 @@
 import promise from './src'
 
+window.Promise = promise
 // function getP () {
 //   return new promise((resolve, reject) => {
 //     setTimeout(() => resolve(111), 3000)

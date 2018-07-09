@@ -1,8 +1,9 @@
 // States: 0 - pending, 1 - fulfilled, 2 - rejected, 3 - another promise
-const asap = require('./asap')
-const noop = _ => {}
 
-// export default class Promise {
+const asap = require('./asap')
+const extensions = require('./extensions')
+const noop = () => {}
+
 module.exports = class Promise {
   constructor (fun) {
     if (!new.target) {
@@ -22,12 +23,30 @@ module.exports = class Promise {
 
   then (onFulfilled, onRejected) {
     const p = new Promise(noop)
-    // 添加一个 deferred 到队列中去
     handle(this, new Handler(p, onFulfilled, onRejected))
 
     return p
   }
+
+  catch (onRejected) {
+    return this.then(null, onRejected)
+  }
+
+  finally (fun) {
+    return this.then(
+      value => Promise.resolve(fun()).then(() => value),
+      reason => Promise.resolve(fun()).then(() => { throw reason })
+    )
+  }
+
+  toString () {
+    return '[object Promise]'
+  }
 }
+
+Promise._noop = noop
+
+extensions(Promise)
 
 function doResolve (fun, promise) {
   let done = false
@@ -125,7 +144,7 @@ function handle (promise, deferred) {
 
 function handleResolved (promise, deferred) {
   // 异步调用，优先通过微任务调用
-  asap(_ => {
+  asap(() => {
     const isResolve = promise._state === 1
     const callback = deferred[isResolve ? 'onFulfilled' : 'onRejected' ]
 

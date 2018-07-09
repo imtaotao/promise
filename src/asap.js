@@ -4,7 +4,9 @@ let index = 0
 let flushing = false
 let requestFlush
 
-const isNodeFun = typeof process !== 'undefined' || typeof setImmediate !== undefined
+const platform = typeof process !== 'undefined'
+  ? process.title || 'browser'
+  : 'browser'
 
 // MutationObserver
 function createMutationObserverCallback (callback) {
@@ -44,13 +46,13 @@ function setImmediateOrNexttick (callback) {
   }
 }
 
-if (isNodeFun) {
+if (platform === 'node') {
   requestFlush = setImmediateOrNexttick(_requestFlush)
 } else {
   const scope = typeof global !== 'undefined' ? global : self
-  const BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver
+  window.BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver
 
-  requestFlush = typeof BrowserMutationObserver === "function"
+  requestFlush = typeof BrowserMutationObserver === 'function'
     ? createMutationObserverCallback(_requestFlush)
     : createTimerCallback(_requestFlush)
 }
