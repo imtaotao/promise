@@ -1,0 +1,17 @@
+{
+  "name": "defined_promise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "test": "promises-aplus-tests test.js"
+  },
+  "author": "taotao",
+  "license": "ISC",
+  "devDependencies": {
+    "promises-aplus-tests": "*",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.9.7"
+  }
+}
