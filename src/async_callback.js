@@ -24,6 +24,9 @@ function createMutationObserverCallback (callback) {
 function createTimerCallback (callback) {
   return () => {
     let t = setTimeout(handleTimer)
+
+    // 由于 timeout 在 firefox 的 worker 线程中进程出现 bug
+    // 为了防止 timeout 不触发，用个 interval 预防
     let i = setInterval(handleTimer, 50)
     function handleTimer () {
       clearTimeout(t)
@@ -38,10 +41,10 @@ function createTimerCallback (callback) {
 // node
 function setImmediateOrNexttick (callback) {
   return () => {
-    if (flushing && hasSetImmediate) {
-      setImmediate(callback);
+    if (flushing && typeof setImmediate === 'function') {
+      setImmediate(callback)
     } else {
-      process.nextTick(callback);
+      process.nextTick(callback)
     }
   }
 }
@@ -52,6 +55,8 @@ if (platform.includes('node')) {
   const scope = typeof global !== 'undefined' ? global : self
   window.BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver
 
+  // MutationObserver 会新建个微任务队列，与 promise 最契合
+  // 备用选择 timeout
   requestFlush = typeof BrowserMutationObserver === 'function'
     ? createMutationObserverCallback(_requestFlush)
     : createTimerCallback(_requestFlush)
@@ -64,7 +69,8 @@ function _requestFlush () {
     index++
     queue[currentIndex].call()
 
-    // 因为task里面可能继续添加队列，所以如果大于限定的值，需要做处理
+    // 因为 task 里面可能继续添加队列，可能会产生一个无线长的队列，内存爆炸，
+    // 所以如果大于限定的值，需要做处理
     if (index > capacity) {
       const newLength = queque.length - index
       // 把队列后面的 task 全部移到前面，然后把后面的删掉，从头继续开始便利调用
@@ -84,6 +90,8 @@ function _requestFlush () {
 }
 
 module.exports = function ascb(task) {
+  // 如果 queue 为空，会走 requestFlush，这个函数为一个异步任务
+  // 而此方法为同步代码，所以等遍历 queue 的时候，队列里面是已经存在 task 了的
   if (!queue.length) {
     requestFlush()
     flushing = true

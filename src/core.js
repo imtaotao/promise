@@ -28,6 +28,11 @@ class Promise {
    *  then(f, r) // TypeError: ...
    */
   then (onFulfilled, onRejected) {
+    /**
+     * 每次都会返回一个新的 promise 出去
+     * 而当前上下文会有个 deferred 队列
+     * 每个 deferred 都会保存这个 return 出去的 promise 和回调
+     */
     const p = new Promise(noop)
     handle(this, new Handler(p, onFulfilled, onRejected))
 
@@ -64,6 +69,8 @@ Promise._noop = noop
 function doResolve (fun, promise) {
   let done = false
 
+  // 立个 flag 保证不能重复调用 resolve 或者 reject
+  // 因为 promise 的 state 一旦改变，就再也不可能改变了
   function _resolve (value) {
     if (done) return
     done = true
@@ -84,7 +91,18 @@ function doResolve (fun, promise) {
 }
 
 function resolve (promise, newValue) {
-  // https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+  // 规范关于 resolve 的描述 https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+  /**
+   * newValue 有可能有以下几种情况
+   * 1. 当前上下文自己，这种情况直接报个错
+   * 2. object 或者 function
+   *    这种情况需要去尝试那 newValue 的 then 方法
+   *    如果拿不到，那就代表是个正常的对象或者函数
+   *    a. 如果 newValue 是一个新的 promise，需要根据新的 promise 的 state 来更改，此时当前 promise 的 state 为 3
+   *    b. 如果 newValue 是带 then 方法的对象({ then () {} })，
+   *       需要把这个 then 方法当成 promise 的构造函数的参数进行调用（可以在浏览器控制台用原生 promise 的测试下）
+   * 3. 其他的值，state 改为 1
+  */
   if (promise === newValue) {
     reject(promise, new TypeError('A promise cannot be resolved with itself'))
     return
@@ -102,13 +120,14 @@ function resolve (promise, newValue) {
       return
     }
 
-    // 如果 newValue 是一个 Promise 实例的话，状态为 3
+    // 如果 newValue 是一个 Promise 实例的话，state 为 3
     if (then === promise.then && newValue instanceof Promise) {
       promise._state = 3
       promise._value = newValue
       finale(promise)
       return
     } else if (typeof then === 'function') {
+      // 规范上说的就是需要把 newValue 当成上下文进行调用
       doResolve(then.bind(newValue), promise)
       return
     }
@@ -120,12 +139,18 @@ function resolve (promise, newValue) {
 }
 
 function reject (promise, reason) {
+  // 改变 state 和 value
   promise._state = 2
   promise._value = reason
   finale(promise)
 }
 
 function finale (promise) {
+  /**
+   * 1.如果当前 promise 没有 deferreds，代表 resolve 是通过同步进行调用的
+   * 此时 promise 的 state 已经改变，value 也已经拿到，不需要做什么事情
+   * 2.如果 deferreds 是存在的，就需要对每个 deferreds 进行处理
+  */
   if (promise._deferreds) {
     if (promise._deferreds.length === 1) {
       handle(promise, promise._deferreds[0])
@@ -140,13 +165,21 @@ function finale (promise) {
   }
 }
 
+/**
+ * handle 方法供两个接口调用，finale 和 then
+ * 它也提供了两种功能，对 传进来的 promise 添加 deferred 或者 调用 deferred 的回调
+ */
 function handle (promise, deferred) {
-  // 如果 promise 的状态为 3
+  /**
+   * 如果 promise 的 state 为 3，拿到最底层的 promise
+   * 因为需要把 deferred 转移到最底层的 promise 上
+   * 这样当前上下文（promise）添加的 then 就会随着最底层的 promise 的 state 改变而改变
+  */
   while (promise._state === 3) {
     promise = promise._value
   }
 
-  // 如果 promise 的状态为 0，一般情况下 _state 都为 0，除非 resolve 为同步代码
+  // 如果 promise 的 state 为 0，一般情况下 _state 都为 0，除非 resolve 为同步代码
   if (promise._state === 0) {
     promise._deferreds
       ? promise._deferreds.push(deferred)
@@ -154,6 +187,13 @@ function handle (promise, deferred) {
     return
   }
 
+  /**
+   * 1.如果是通过 finale 走到这里
+   *  此时 promise.state 为 1 或者 2
+   * 2.如果是通过 then 方法走到这里
+   *  此时 promise.state 为 1 或者 2，promise.deferred 为 null
+   *  但是可以直接用 handle 参数（promise, deferred）进行调用
+  */
   handleResolved(promise, deferred)
 }
 
@@ -172,7 +212,25 @@ function handleResolved (promise, deferred) {
     }
 
     try {
+      /**
+       * 如果外面是 then 形式的链式调用，此时的 deferred.promise 应该是
+       * {
+       *  deferred: [不为空的数组],
+       *  state: 0,
+       *  value: null,
+       * }
+      */
       const result = callback(promise._value)
+
+      /**
+       * 经过 resolve 之后，deferred.promise 应该是
+       * {
+       *   deferred: [不为空的数组],
+       *   state: 1 或者 2 或者 3,
+       *   value: xx
+       * }
+       * 然后走 finale 就可以完成链式操作了
+       */
       resolve(deferred.promise, result)
     } catch (error) {
       reject(deferred.promise, error)
@@ -188,6 +246,7 @@ function getThen (value) {
   }
 }
 
+// 一个 deferred 对象应该为 { promise, onFulfilled, onRejected }
 function Handler (promise, onFulfilled, onRejected) {
   this.promise = promise
   this.onFulfilled = typeof onFulfilled === 'function'

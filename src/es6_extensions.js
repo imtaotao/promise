@@ -35,6 +35,7 @@ Promise.reject = function (reason) {
 }
 
 Promise.all = function (array) {
+  // 用 for of 是为了检测 array 是一个 iterable
   for (const v of array) break
 
   return new Promise((resolve, reject) => {
