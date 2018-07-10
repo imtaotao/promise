@@ -3,6 +3,7 @@ const queue = []
 let index = 0
 let flushing = false
 let requestFlush
+let BrowserMutationObserver = null
 
 const platform = typeof process !== 'undefined'
   ? process.title || 'browser'
@@ -53,7 +54,7 @@ if (platform.includes('node')) {
   requestFlush = setImmediateOrNexttick(_requestFlush)
 } else {
   const scope = typeof global !== 'undefined' ? global : self
-  window.BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver
+  BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver
 
   // MutationObserver 会新建个微任务队列，与 promise 最契合
   // 备用选择 timeout
@@ -69,7 +70,7 @@ function _requestFlush () {
     index++
     queue[currentIndex].call()
 
-    // 因为 task 里面可能继续添加队列，可能会产生一个无线长的队列，内存爆炸，
+    // 因为 task 里面可能继续添加队列，可能会产生一个无限长的队列，内存爆炸，
     // 所以如果大于限定的值，需要做处理
     if (index > capacity) {
       const newLength = queque.length - index
