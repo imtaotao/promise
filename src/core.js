@@ -167,7 +167,7 @@ function finale (promise) {
 
 /**
  * handle 方法供两个接口调用，finale 和 then
- * 它也提供了两种功能，对 传进来的 promise 添加 deferred 或者 调用 deferred 的回调
+ * 它也提供了两种功能，对传进来的 promise 添加 deferred 或者 调用 deferred 的回调
  */
 function handle (promise, deferred) {
   /**
@@ -179,7 +179,10 @@ function handle (promise, deferred) {
     promise = promise._value
   }
 
-  // 如果 promise 的 state 为 0，一般情况下 _state 都为 0，除非 resolve 为同步代码
+  /**
+   * 如果通过 then 方法走到这里，一般情况下 state 都为 0，除非 resolve 为同步代码
+   * 如果通过 finale 方法走到这里，state 肯定 1 或者 2，出发经过了 while 循环，底层的 promise 状态还为 0
+   */
   if (promise._state === 0) {
     promise._deferreds
       ? promise._deferreds.push(deferred)
