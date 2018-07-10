@@ -3,7 +3,7 @@ const queue = []
 let index = 0
 let flushing = false
 let requestFlush
-let BrowserMutationObserver = null
+let BrowserMutationObserver
 
 const platform = typeof process !== 'undefined'
   ? process.title || 'browser'
@@ -26,8 +26,8 @@ function createTimerCallback (callback) {
   return () => {
     let t = setTimeout(handleTimer)
 
-    // 由于 timeout 在 firefox 的 worker 线程中进程出现 bug
-    // 为了防止 timeout 不触发，用个 interval 预防
+    // 由于 timeout 在 firefox 的 worker 线程中可能会出现 bug
+    // 为了防止 timeout 不触发，用 interval 预防
     let i = setInterval(handleTimer, 50)
     function handleTimer () {
       clearTimeout(t)

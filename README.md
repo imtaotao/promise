@@ -12,6 +12,4 @@
 ![test](./test.png)
 
 ### 说明
-本 `Promise` 案例采用 es6 实现，核心代码（src/core）注释详细，而且通过 promise 官方全部的单元测试，仅供学习之用。欢迎各位同学点个 `star` 😁
-<br>
-有问题可以在 `issues` 里面讨论哈。
+本 `Promise` 案例采用 es6 实现，核心代码（src/core）注释详细，而且通过 promise 官方全部的单元测试，能够与原生 `async/await` 函数兼容，仅供学习之用。也欢迎各位同学点个 `star` 😁 。有问题可以在 `issues` 里面讨论哈。
