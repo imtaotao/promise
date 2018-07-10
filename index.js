@@ -1,32 +1,39 @@
 import promise from './src'
 
-window.Promise = promise
-// function getP () {
-//   return new promise((resolve, reject) => {
-//     setTimeout(() => resolve(111), 3000)
-//   })
-// }
-// var a = getP()
-// a.then(res => console.log('res', res))
-var b = new promise((re, rj) => {
-  // setTimeout(() => re(111), 2000)
-  re(111)
-})
-setTimeout(() => {
- console.log(222);
-});
-b.then(res => console.log(res))
-.then(res => console.log(res))
+// window.Promise = promise
 
-// function getP () {
-//   return new promise((resolve, reject) => {
-//     setTimeout(() => resolve(111), 3000)
-//   })
-// }
-// var a = getP()
-// a.then(res => console.log('res', res))
-// var b = new promise((re, rj) => {
-//   setTimeout(() => re(a), 1000)
-// })
+function testGenerator () {
+  const p = new Promise((resolve) => {
+    setTimeout(() => resolve(`resolve promise`), 2000)
+  })
 
-// b.then(res => console.log(res))
+  function * f() {
+    const res = yield p
+    console.assert(res === 'resolve promise', '[res] is not the expected value')
+  }
+
+  const g = f()
+  g.next().value.then(res => g.next(res))
+}
+
+function testAsyncFun () {
+  function resolve(val) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        val++
+        resolve(val)
+      }, 2000)
+    })
+  }
+
+  async function f() {
+    let val = await resolve(10)
+    let valTwo  = await resolve(val++)
+
+    console.assert(valTwo === 12, '[valTwo] is not the expected value')
+  }
+  f()
+}
+
+testGenerator()
+testAsyncFun()

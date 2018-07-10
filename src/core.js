@@ -14,15 +14,20 @@ class Promise {
 
     this._state = 0
     this._value = null
-    this._deferreds = []
+    this._deferreds = null
 
     if (fun === noop) return
     doResolve(fun, this)
   }
 
+  /**
+   * 本来 prototype method 应该需要判断 this，
+   * 如果 this 不符合要求应该 throw TypeError，
+   * example:
+   *  const { then } = promise.then
+   *  then(f, r) // TypeError: ...
+   */
   then (onFulfilled, onRejected) {
-    check(this, 'then')
-
     const p = new Promise(noop)
     handle(this, new Handler(p, onFulfilled, onRejected))
 
@@ -30,13 +35,11 @@ class Promise {
   }
 
   catch (onRejected) {
-    check(this, 'catch')
     return this.then(null, onRejected)
   }
 
   finally (fun) {
-    check(this, 'finally')
-    // 用 Promise.resolve 包裹起来的原因是，fun 有可能返回的是一个 promise 
+    // 用 Promise.resolve 包裹起来的原因是，fun 有可能返回的是一个 promise
     return this.then(
       value => Promise.resolve(fun()).then(() => value),
       reason => Promise.resolve(fun()).then(() => { throw reason })
@@ -44,7 +47,10 @@ class Promise {
   }
 
   getValue () {
-    check(this, 'getValue')
+    if (this._state === 3) {
+      return this._value.getValue()
+    }
+
     return this._value
   }
 
@@ -120,17 +126,17 @@ function reject (promise, reason) {
 }
 
 function finale (promise) {
-  if (promise._deferreds.length) {
+  if (promise._deferreds) {
     if (promise._deferreds.length === 1) {
       handle(promise, promise._deferreds[0])
-      promise._deferreds = []
+      promise._deferreds = null
       return
     }
 
     for (const deferred of promise._deferreds) {
       handle(promise, deferred)
     }
-    promise._deferreds = []
+    promise._deferreds = null
   }
 }
 
@@ -142,7 +148,9 @@ function handle (promise, deferred) {
 
   // 如果 promise 的状态为 0，一般情况下 _state 都为 0，除非 resolve 为同步代码
   if (promise._state === 0) {
-    promise._deferreds.push(deferred)
+    promise._deferreds
+      ? promise._deferreds.push(deferred)
+      : (promise._deferreds = [deferred])
     return
   }
 
@@ -188,12 +196,6 @@ function Handler (promise, onFulfilled, onRejected) {
   this.onRejected = typeof onRejected === 'function'
     ? onRejected
     : null
-}
-
-function check (self, keyWord) {
-  if (!(self instanceof Promise)) {
-    throw TypeError(`Receiver of Promise.prototype.${keyWord} call is not a non-null object`)
-  }
 }
 
 module.exports = Promise
