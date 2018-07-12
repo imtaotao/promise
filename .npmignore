@@ -1,0 +1,53 @@
+# vim
+*~
+*.sw?
+
+# generic editing tools
+tags
+tags.lock
+
+# mac
+*.DS_Store
+
+# wandows
+.vscode/
+
+# build tools
+node_modules/
+
+# logfiles
+*.log
+.idea/
+
+# dev artifacts
+yarn.lock
+package-lock.json
+
+# misc
+README.md
+
+# source maps
+*.js.map
+
+# source files
+lib/
+
+# test projects
+test.js
+test.png
+
+# self
+.npmignore
+.gitignore
+
+#example
+example/
+
+#docs
+docs/
+
+# other configs
+webpack.config.js
+index.js
+index.html
+webpack.config.js

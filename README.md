@@ -1,15 +1,8 @@
-## Promise/A+ 规范的实现
+## Promise/es6
 
-### 安装
-`npm i` 或者 `yarn` 安装依赖包
+This `Promise` case is implemented in `es6`, and it is compatible with the native `async/await` function through the official unit test of the promise. This case is for study only, if it is used in a production environment, it needs to be compiled into `es5 code`.
 
-### 测试
-依赖安装完毕后 `npm run test` 或者 `yarn test`。
+### test
+You can use `npm i` or `yarn` install dependencies, then use `npm run test` or `yarn test` to test.
 <br>
-还可以通 `npm run start` 或者 `yarn start` 启动一个测试服务器，在浏览器端进行测试。
-
-### 测试截图
 ![test](./test.png)
-
-### 说明
-本 `Promise` 案例采用 es6 实现，核心代码（src/core）注释详细，而且通过 promise 官方全部的单元测试，能够与原生 `async/await` 函数兼容，仅供学习之用。也欢迎各位同学点个 `star` 😁 。有问题可以在 `issues` 里面讨论哈。

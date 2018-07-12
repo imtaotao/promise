@@ -5,6 +5,7 @@ const noop = () => {}
 
 class Promise {
   constructor (fun) {
+    // 有可能被编译为 es5，还是需要做下限制
     if (!new.target) {
       throw TypeError('Calling a Promise constructor without new is forbidden')
     }
@@ -204,7 +205,7 @@ function handleResolved (promise, deferred) {
   // 异步调用，优先通过微任务调用
   ascb(() => {
     const isResolve = promise._state === 1
-    const callback = deferred[isResolve ? 'onFulfilled' : 'onRejected' ]
+    const callback = deferred[isResolve ? 'onFulfilled' : 'onRejected']
 
     // 如果当期 deferred 的回调为 null 就把当前 promise._value 为值继续往下找
     if (callback === null) {

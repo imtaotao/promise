@@ -35,8 +35,7 @@ Promise.reject = function (reason) {
 }
 
 Promise.all = function (array) {
-  // 用 for of 是为了检测 array 是一个 iterable
-  for (const v of array) break
+  !Array.isArray(array) && (array = Array.from(array))
 
   return new Promise((resolve, reject) => {
     if (array.length === 0) return resolve(array)
@@ -78,8 +77,6 @@ Promise.all = function (array) {
 }
 
 Promise.race = function (array) {
-  for (const v of array) break
-
   return new Promise((resolve, reject) => {
     for (const val of array) {
       Promise.resolve(val).then(resolve, reject)

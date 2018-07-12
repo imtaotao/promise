@@ -1,6 +1,6 @@
 import promise from './src'
 
-// window.Promise = promise
+window.Promise = promise
 
 function testGenerator () {
   const p = new Promise((resolve) => {
