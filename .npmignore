@@ -46,8 +46,12 @@ example/
 #docs
 docs/
 
+#src
+src/
+
 # other configs
 webpack.config.js
 index.js
 index.html
 webpack.config.js
+build.js

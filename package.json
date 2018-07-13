@@ -1,17 +1,27 @@
 {
-  "name": "promise",
-  "version": "1.0.0",
+  "name": "es201-promise",
+  "version": "1.0.1",
   "description": "A basic promise implementation",
-  "main": "index.js",
+  "main": "dist/promise.common.js",
+  "module": "dist/promise.esm.js",
   "scripts": {
     "start": "webpack-dev-server",
+    "build": "node build.js",
     "test": "promises-aplus-tests test.js"
   },
   "author": "taotao",
   "license": "ISC",
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015-rollup": "^3.0.0",
     "promises-aplus-tests": "*",
+    "rollup": "^0.62.0",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-cleanup": "^3.0.0",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
+  },
+  "dependencies": {
+    "es2015-promise": "^1.0.1"
   }
 }

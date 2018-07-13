@@ -1,2 +1,4 @@
-module.exports = require('./core')
-require('./es6_extensions')
+import './es6_extensions'
+import Promise from './core'
+
+export default Promise

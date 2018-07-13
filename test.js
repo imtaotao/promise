@@ -1,4 +1,4 @@
-const Promise = require('./src')
+const Promise = require('./build/promise.esm.js')
 
 exports.deferred = function ()  {
   let resolve, reject

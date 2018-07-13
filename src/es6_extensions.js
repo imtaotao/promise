@@ -1,5 +1,4 @@
-const Promise = require('./index')
-module.exports = Promise
+import Promise from './core'
 
 Promise.resolve = function (value) {
   // 这样实现其实与 es6 规范描述的 promise.resolve 实现是一样的

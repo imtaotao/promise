@@ -1,12 +1,10 @@
 // States: 0 - pending, 1 - fulfilled, 2 - rejected, 3 - another promise
-
-const ascb = require('./async_callback')
+import ascb from './async_callback'
 const noop = () => {}
 
-class Promise {
+export default class Promise {
   constructor (fun) {
-    // 有可能被编译为 es5，还是需要做下限制
-    if (!new.target) {
+    if (!(this instanceof Promise)) {
       throw TypeError('Calling a Promise constructor without new is forbidden')
     }
     if (typeof fun !== 'function') {

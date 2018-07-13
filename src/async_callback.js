@@ -90,7 +90,7 @@ function _requestFlush () {
   flushing = false
 }
 
-module.exports = function ascb(task) {
+export default function ascb(task) {
   // 如果 queue 为空，会走 requestFlush，这个函数为一个异步任务
   // 而此方法为同步代码，所以等遍历 queue 的时候，队列里面是已经存在 task 了的
   if (!queue.length) {
