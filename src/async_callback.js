@@ -42,11 +42,13 @@ function createTimerCallback (callback) {
 // node
 function setImmediateOrNexttick (callback) {
   return () => {
-    // 由于没有办法真正添加为 microtask，
-    // 在 node 中，promise task 会被添加到 nextTickQueue
-    // 为了保证 promise 最好不能在 nextTick 前面被调用
-    // 并且 setTmmediate 会在 io 任务结束被调用，而在 node 中， promise 应用大部分情况都是处理 io,
-    // setTmmediate 即使递归也不会导致 event loop 被锁死，所以此处优先采用 setImemediate
+    /**
+     * 由于没有办法真正添加为 microtask，即使在 node 中，promise task 会被添加到 nextTickQueue
+     * 以下原因导致优先采用 setTmmediate
+     *  1. 为了保证 promise 最好不能在 nextTick 前面被调用，nextTick 会在 poll 阶段之前被调用
+     *  2. setTmmediate 会在 poll 阶段结束后被调用，而在 node 中，promise 应用大部分情况都是处理 io
+     *  3. process.nextTick 递归会导致 event loop 被锁死，而 setImmediate 不会
+     */
     if (flushing && typeof setImmediate === 'function') {
       setImmediate(callback)
     } else {
