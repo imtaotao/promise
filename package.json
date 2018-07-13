@@ -1,5 +1,5 @@
 {
-  "name": "es201-promise",
+  "name": "es2015-promise",
   "version": "1.0.1",
   "description": "A basic promise implementation",
   "main": "dist/promise.common.js",
@@ -21,7 +21,10 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
-  "dependencies": {
-    "es2015-promise": "^1.0.1"
-  }
+  "keywords":[
+    "promise",
+    "es6",
+    "es2015",
+    "polyfill"
+  ]
 }
