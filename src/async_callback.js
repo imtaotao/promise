@@ -42,6 +42,11 @@ function createTimerCallback (callback) {
 // node
 function setImmediateOrNexttick (callback) {
   return () => {
+    // 由于没有办法真正添加为 microtask，
+    // 在 node 中，promise task 会被添加到 nextTickQueue
+    // 为了保证 promise 最好不能在 nextTick 前面被调用
+    // 并且 setTmmediate 会在 io 任务结束被调用，而在 node 中， promise 应用大部分情况都是处理 io,
+    // setTmmediate 即使递归也不会导致 event loop 被锁死，所以此处优先采用 setImemediate
     if (flushing && typeof setImmediate === 'function') {
       setImmediate(callback)
     } else {
@@ -56,7 +61,7 @@ if (platform.includes('node')) {
   const scope = typeof global !== 'undefined' ? global : self
   BrowserMutationObserver = scope.MutationObserver || scope.WebKitMutationObserver
 
-  // MutationObserver 会新建个微任务队列，与 promise 最契合
+  // MutationObserver 会新建个 microtask，与 promise 最契合
   // 备用选择 timeout
   requestFlush = typeof BrowserMutationObserver === 'function'
     ? createMutationObserverCallback(_requestFlush)
