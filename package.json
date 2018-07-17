@@ -1,6 +1,6 @@
 {
   "name": "es2015-promise",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A basic promise implementation",
   "main": "dist/promise.common.js",
   "module": "dist/promise.esm.js",
@@ -20,6 +20,10 @@
     "rollup-plugin-cleanup": "^3.0.0",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imtaotao/promise.git"
   },
   "keywords":[
     "promise",

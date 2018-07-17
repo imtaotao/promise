@@ -5,9 +5,7 @@ let flushing = false
 let requestFlush
 let BrowserMutationObserver
 
-const platform = typeof process !== 'undefined'
-  ? process.title || 'browser'
-  : 'browser'
+const isNode = typeof module !== 'undefined' && module.exports
 
 // MutationObserver
 function createMutationObserverCallback (callback) {
@@ -57,7 +55,7 @@ function setImmediateOrNexttick (callback) {
   }
 }
 
-if (platform.includes('node')) {
+if (isNode) {
   requestFlush = setImmediateOrNexttick(_requestFlush)
 } else {
   const scope = typeof global !== 'undefined' ? global : self

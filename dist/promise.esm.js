@@ -4,7 +4,7 @@ var index = 0;
 var flushing = false;
 var requestFlush = void 0;
 var BrowserMutationObserver = void 0;
-var platform = typeof process !== 'undefined' ? process.title || 'browser' : 'browser';
+var isNode = typeof module !== 'undefined' && module.exports;
 function createMutationObserverCallback(callback) {
   var toggle = 1;
   var observer = new BrowserMutationObserver(callback);
@@ -37,7 +37,7 @@ function setImmediateOrNexttick(callback) {
     }
   };
 }
-if (platform.includes('node')) {
+if (isNode) {
   requestFlush = setImmediateOrNexttick(_requestFlush);
 } else {
   var scope = typeof global !== 'undefined' ? global : self;

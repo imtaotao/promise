@@ -258,5 +258,3 @@ function Handler (promise, onFulfilled, onRejected) {
     ? onRejected
     : null
 }
-
-module.exports = Promise
