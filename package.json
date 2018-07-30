@@ -1,6 +1,6 @@
 {
   "name": "es2015-promise",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A basic promise implementation",
   "main": "dist/promise.common.js",
   "module": "dist/promise.esm.js",
