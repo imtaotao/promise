@@ -126,7 +126,7 @@ function resolve (promise, newValue) {
       finale(promise)
       return
     } else if (typeof then === 'function') {
-      // 规范上说的就是需要把 newValue 当成上下文进行调用
+      // 修复 then 方法内部的 this 指向
       doResolve(then.bind(newValue), promise)
       return
     }

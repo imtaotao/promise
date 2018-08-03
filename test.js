@@ -1,6 +1,6 @@
 const Promise = require('./dist/promise.min')
 
-exports.deferred = function ()  {
+exports.deferred = function () {
   let resolve, reject
   const promise = new Promise(function (_resolve, _reject) {
     resolve = _resolve

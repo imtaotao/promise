@@ -325,7 +325,6 @@ function Handler(promise, onFulfilled, onRejected) {
   this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
   this.onRejected = typeof onRejected === 'function' ? onRejected : null;
 }
-module.exports = Promise$1;
 
 Promise$1.resolve = function (value) {
   if (value instanceof Promise$1) return value;

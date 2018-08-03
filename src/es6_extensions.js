@@ -54,13 +54,16 @@ Promise.all = function (array) {
 
       // 如果 val 是一个 promise
       if (val instanceof Promise && val.then === Promise.prototype.then) {
+        // 如果是我们自己的 promise 实现，就可以直接根据状态来做
         while (val._state === 3) {
           val = val._value
         }
 
-        // Promise.all 被拒绝并不影响每个单独的 promise 继续执行
         if (val._state === 1) return result(val._value, i)
+        // Promise.all 被拒绝并不影响每个单独的 promise 继续执行
         if (val._state === 2) reject(val._value)
+
+        // 为了兼容其他的 promise 实现
         val.then(res => result(res, i), reject)
         return
       }
