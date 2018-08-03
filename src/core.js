@@ -43,7 +43,8 @@ export default class Promise {
   }
 
   finally (fun) {
-    // 用 Promise.resolve 包裹起来的原因是，fun 有可能返回的是一个 promise
+    // 我们要保证 fun 不会收到任何参数（正常或者错误的值）
+    // 用 Promise.resolve 包裹起来的原因是，fun 有可能返回的是一个 promise，我们要保证 finally 之后继续链式
     return this.then(
       value => Promise.resolve(fun()).then(() => value),
       reason => Promise.resolve(fun()).then(() => { throw reason })
